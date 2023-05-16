@@ -6,7 +6,7 @@
 
 # Mailchimp Marketing — PHP (backport Guzzle 4 & PHP 5.6)
 
-The official PHP client library for the Mailchimp Marketing API
+The unofficial PHP client library (forked from the official repo) for the Mailchimp Marketing API
 
 ## Installation
 
