@@ -30,12 +30,9 @@
 namespace MailchimpMarketing\Api;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp\json_decode as json_decode;
+
 use MailchimpMarketing\ApiException;
 use MailchimpMarketing\Configuration;
 use MailchimpMarketing\HeaderSelector;
@@ -88,7 +85,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -152,10 +149,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -167,16 +164,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -199,13 +199,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteStoreCart($store_id, $cart_id)
@@ -232,7 +231,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -310,10 +309,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -325,16 +324,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -357,13 +359,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteCartLineItem($store_id, $cart_id, $line_id)
@@ -390,7 +391,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -482,10 +483,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -497,16 +498,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -529,13 +533,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteStoreCustomer($store_id, $customer_id)
@@ -562,7 +565,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -640,10 +643,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -655,16 +658,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -687,13 +693,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteOrder($store_id, $order_id)
@@ -720,7 +725,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -798,10 +803,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -813,16 +818,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -845,13 +853,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteOrderLineItem($store_id, $order_id, $line_id)
@@ -878,7 +885,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -970,10 +977,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -985,16 +992,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1017,13 +1027,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteStoreProduct($store_id, $product_id)
@@ -1050,7 +1059,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1128,10 +1137,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1143,16 +1152,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1175,13 +1187,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteProductImage($store_id, $product_id, $image_id)
@@ -1208,7 +1219,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1300,10 +1311,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1315,16 +1326,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1347,13 +1361,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteProductVariant($store_id, $product_id, $variant_id)
@@ -1380,7 +1393,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1472,10 +1485,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1487,16 +1500,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1519,13 +1535,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deletePromoCode($store_id, $promo_rule_id, $promo_code_id)
@@ -1552,7 +1567,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1644,10 +1659,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1659,16 +1674,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1691,13 +1709,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deletePromoRule($store_id, $promo_rule_id)
@@ -1724,7 +1741,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1802,10 +1819,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1817,16 +1834,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1849,13 +1869,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function orders($fields = null, $exclude_fields = null, $count = '10', $offset = '0', $campaign_id = null, $outreach_id = null, $customer_id = null, $has_outreach = null)
@@ -1883,7 +1902,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1975,10 +1994,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1990,16 +2009,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2022,13 +2044,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function stores($fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -2056,7 +2077,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -2132,10 +2153,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -2147,16 +2168,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2179,13 +2203,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getStore($store_id, $fields = null, $exclude_fields = null)
@@ -2213,7 +2236,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -2291,10 +2314,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -2306,16 +2329,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2338,13 +2364,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getStoreCarts($store_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -2372,7 +2397,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -2462,10 +2487,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -2477,16 +2502,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2509,13 +2537,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getStoreCart($store_id, $cart_id, $fields = null, $exclude_fields = null)
@@ -2543,7 +2570,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -2635,10 +2662,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -2650,16 +2677,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2682,13 +2712,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getAllCartLineItems($store_id, $cart_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -2716,7 +2745,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -2820,10 +2849,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -2835,16 +2864,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2867,13 +2899,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getCartLineItem($store_id, $cart_id, $line_id, $fields = null, $exclude_fields = null)
@@ -2901,7 +2932,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -3007,10 +3038,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -3022,16 +3053,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -3054,13 +3088,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getAllStoreCustomers($store_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0', $email_address = null)
@@ -3088,7 +3121,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -3182,10 +3215,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -3197,16 +3230,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -3229,13 +3265,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getStoreCustomer($store_id, $customer_id, $fields = null, $exclude_fields = null)
@@ -3263,7 +3298,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -3355,10 +3390,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -3370,16 +3405,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -3402,13 +3440,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getStoreOrders($store_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0', $customer_id = null, $has_outreach = null, $campaign_id = null, $outreach_id = null)
@@ -3436,7 +3473,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -3542,10 +3579,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -3557,16 +3594,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -3589,13 +3629,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getOrder($store_id, $order_id, $fields = null, $exclude_fields = null)
@@ -3623,7 +3662,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -3715,10 +3754,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -3730,16 +3769,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -3762,13 +3804,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getAllOrderLineItems($store_id, $order_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -3796,7 +3837,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -3900,10 +3941,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -3915,16 +3956,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -3947,13 +3991,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getOrderLineItem($store_id, $order_id, $line_id, $fields = null, $exclude_fields = null)
@@ -3981,7 +4024,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -4087,10 +4130,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -4102,16 +4145,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -4134,13 +4180,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getAllStoreProducts($store_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -4168,7 +4213,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -4258,10 +4303,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -4273,16 +4318,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -4305,13 +4353,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getStoreProduct($store_id, $product_id, $fields = null, $exclude_fields = null)
@@ -4339,7 +4386,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -4431,10 +4478,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -4446,16 +4493,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -4478,13 +4528,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getProductImages($store_id, $product_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -4512,7 +4561,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -4616,10 +4665,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -4631,16 +4680,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -4663,13 +4715,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getProductImage($store_id, $product_id, $image_id, $fields = null, $exclude_fields = null)
@@ -4697,7 +4748,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -4803,10 +4854,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -4818,16 +4869,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -4850,13 +4904,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getProductVariants($store_id, $product_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -4884,7 +4937,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -4988,10 +5041,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -5003,16 +5056,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -5035,13 +5091,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getProductVariant($store_id, $product_id, $variant_id, $fields = null, $exclude_fields = null)
@@ -5069,7 +5124,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -5175,10 +5230,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -5190,16 +5245,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -5222,13 +5280,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getPromoCodes($promo_rule_id, $store_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -5256,7 +5313,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -5360,10 +5417,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -5375,16 +5432,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -5407,13 +5467,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getPromoCode($store_id, $promo_rule_id, $promo_code_id, $fields = null, $exclude_fields = null)
@@ -5441,7 +5500,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -5547,10 +5606,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -5562,16 +5621,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -5594,13 +5656,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function listPromoRules($store_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -5628,7 +5689,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -5718,10 +5779,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -5733,16 +5794,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -5765,13 +5829,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getPromoRule($store_id, $promo_rule_id, $fields = null, $exclude_fields = null)
@@ -5799,7 +5862,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -5891,10 +5954,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -5906,16 +5969,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -5938,13 +6004,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateStore($store_id, $body)
@@ -5972,7 +6037,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -6045,10 +6110,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -6060,16 +6125,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6092,13 +6160,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateStoreCart($store_id, $cart_id, $body)
@@ -6126,7 +6193,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -6213,10 +6280,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -6228,16 +6295,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6260,13 +6330,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateCartLineItem($store_id, $cart_id, $line_id, $body)
@@ -6294,7 +6363,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -6395,10 +6464,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -6410,16 +6479,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6442,13 +6514,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateStoreCustomer($store_id, $customer_id, $body)
@@ -6476,7 +6547,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -6563,10 +6634,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -6578,16 +6649,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6610,13 +6684,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateOrder($store_id, $order_id, $body)
@@ -6644,7 +6717,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -6731,10 +6804,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -6746,16 +6819,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6778,13 +6854,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateOrderLineItem($store_id, $order_id, $line_id, $body)
@@ -6812,7 +6887,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -6913,10 +6988,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -6928,16 +7003,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6960,13 +7038,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateStoreProduct($store_id, $product_id, $body)
@@ -6994,7 +7071,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -7081,10 +7158,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -7096,16 +7173,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -7128,13 +7208,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateProductImage($store_id, $product_id, $image_id, $body)
@@ -7162,7 +7241,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -7263,10 +7342,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -7278,16 +7357,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -7310,13 +7392,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateProductVariant($store_id, $product_id, $variant_id, $body)
@@ -7344,7 +7425,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -7445,10 +7526,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -7460,16 +7541,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -7492,13 +7576,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updatePromoCode($store_id, $promo_rule_id, $promo_code_id, $body)
@@ -7526,7 +7609,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -7627,10 +7710,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -7642,16 +7725,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -7674,13 +7760,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updatePromoRule($store_id, $promo_rule_id, $body)
@@ -7708,7 +7793,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -7795,10 +7880,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -7810,16 +7895,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -7842,13 +7930,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addStore($body)
@@ -7876,7 +7963,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -7935,10 +8022,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -7950,16 +8037,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -7982,13 +8072,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addStoreCart($store_id, $body)
@@ -8016,7 +8105,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -8089,10 +8178,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -8104,16 +8193,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -8136,13 +8228,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addCartLineItem($store_id, $cart_id, $body)
@@ -8170,7 +8261,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -8257,10 +8348,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -8272,16 +8363,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -8304,13 +8398,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addStoreCustomer($store_id, $body)
@@ -8338,7 +8431,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -8411,10 +8504,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -8426,16 +8519,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -8458,13 +8554,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addStoreOrder($store_id, $body)
@@ -8492,7 +8587,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -8565,10 +8660,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -8580,16 +8675,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -8612,13 +8710,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addOrderLineItem($store_id, $order_id, $body)
@@ -8646,7 +8743,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -8733,10 +8830,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -8748,16 +8845,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -8780,13 +8880,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addStoreProduct($store_id, $body)
@@ -8814,7 +8913,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -8887,10 +8986,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -8902,16 +9001,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -8934,13 +9036,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addProductImage($store_id, $product_id, $body)
@@ -8968,7 +9069,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -9055,10 +9156,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -9070,16 +9171,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -9102,13 +9206,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addProductVariants($store_id, $product_id, $body)
@@ -9136,7 +9239,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -9223,10 +9326,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -9238,16 +9341,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -9270,13 +9376,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addPromoCode($store_id, $promo_rule_id, $body)
@@ -9304,7 +9409,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -9391,10 +9496,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -9406,16 +9511,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -9438,13 +9546,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addPromoRules($store_id, $body)
@@ -9472,7 +9579,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -9545,10 +9652,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -9560,16 +9667,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -9592,13 +9702,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function setStoreCustomer($store_id, $customer_id, $body)
@@ -9626,7 +9735,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -9713,10 +9822,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -9728,16 +9837,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -9760,13 +9872,12 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PUT',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PUT', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addProductVariant($store_id, $product_id, $variant_id, $body)
@@ -9794,7 +9905,7 @@ class EcommerceApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -9895,10 +10006,10 @@ class EcommerceApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -9910,16 +10021,19 @@ class EcommerceApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -9942,27 +10056,26 @@ class EcommerceApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PUT',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PUT', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     protected function createHttpClientOption()
     {
         $options = [];
         if ($this->config->getDebug()) {
-            $options[RequestOptions::DEBUG] = fopen($this->config->getDebugFile(), 'a');
-            if (!$options[RequestOptions::DEBUG]) {
+            $options['debug'] = fopen($this->config->getDebugFile(), 'a');
+            if (!$options['debug']) {
                 throw new \RuntimeException('Failed to open the debug file: ' . $this->config->getDebugFile());
             }
         }
 
         if ($this->config->getTimeout()) {
-            $options[RequestOptions::TIMEOUT] = $this->config->getTimeout();
+            $options['timeout'] = $this->config->getTimeout();
         }
 
         return $options;

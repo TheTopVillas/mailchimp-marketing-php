@@ -62,6 +62,87 @@ class Configuration
     protected $debugFile = 'php://output';
     protected $tempFolderPath;
     protected $timeout = 120;
+    
+    /** @var AccountExportApi */
+    public $accountExport;
+
+    /** @var AccountExportsApi */
+    public $accountExports;
+
+    /** @var ActivityFeedApi */
+    public $activityFeed;
+
+    /** @var AuthorizedAppsApi */
+    public $authorizedApps;
+
+    /** @var AutomationsApi */
+    public $automations;
+
+    /** @var BatchWebhooksApi */
+    public $batchWebhooks;
+
+    /** @var BatchesApi */
+    public $batches;
+
+    /** @var CampaignFoldersApi */
+    public $campaignFolders;
+
+    /** @var CampaignsApi */
+    public $campaigns;
+
+    /** @var ConnectedSitesApi */
+    public $connectedSites;
+
+    /** @var ConversationsApi */
+    public $conversations;
+
+    /** @var CustomerJourneysApi */
+    public $customerJourneys;
+
+    /** @var EcommerceApi */
+    public $ecommerce;
+
+    /** @var FacebookAdsApi */
+    public $facebookAds;
+    
+    /** @var FileManagerApi */
+    public $fileManager;
+
+    /** @var LandingPagesApi */
+    public $landingPages;
+
+    /** @var ListsApi */
+    public $lists;
+
+    /** @var PingApi */
+    public $ping;
+
+    /** @var ReportingApi */
+    public $reporting;
+
+    /** @var ReportsApi */
+    public $reports;
+
+    /** @var RootApi */
+    public $root;
+
+    /** @var SearchCampaignsApi */
+    public $searchCampaigns;
+
+    /** @var SearchMembersApi */
+    public $searchMembers;
+
+    /** @var SurveysApi */
+    public $Surveys;
+
+    /** @var TemplateFoldersApi */
+    public $templateFolders;
+
+    /** @var TemplatesApi */
+    public $templates;
+
+    /** @var VerifiedDomainsApi */
+    public $verifiedDomains;
 
     public function __construct()
     {
@@ -256,7 +337,10 @@ class Configuration
         return self::$defaultConfiguration;
     }
 
-    public static function setDefaultConfiguration(Configuration $config)
+    /**
+     * @param \MailchimpMarketing\Configuration $config
+     */
+    public static function setDefaultConfiguration($config)
     {
         self::$defaultConfiguration = $config;
     }

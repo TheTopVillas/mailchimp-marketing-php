@@ -30,12 +30,9 @@
 namespace MailchimpMarketing\Api;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp\json_decode as json_decode;
+
 use MailchimpMarketing\ApiException;
 use MailchimpMarketing\Configuration;
 use MailchimpMarketing\HeaderSelector;
@@ -63,7 +60,7 @@ class ConversationsApi
         return $this->config;
     }
 
-    public function list($fields = null, $exclude_fields = null, $count = '10', $offset = '0', $has_unread_messages = null, $list_id = null, $campaign_id = null)
+    public function getList($fields = null, $exclude_fields = null, $count = '10', $offset = '0', $has_unread_messages = null, $list_id = null, $campaign_id = null)
     {
         $response = $this->listWithHttpInfo($fields, $exclude_fields, $count, $offset, $has_unread_messages, $list_id, $campaign_id);
         return $response;
@@ -88,7 +85,7 @@ class ConversationsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -176,10 +173,10 @@ class ConversationsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -191,16 +188,19 @@ class ConversationsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -223,13 +223,12 @@ class ConversationsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function get($conversation_id, $fields = null, $exclude_fields = null)
@@ -257,7 +256,7 @@ class ConversationsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -335,10 +334,10 @@ class ConversationsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -350,16 +349,19 @@ class ConversationsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -382,13 +384,12 @@ class ConversationsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getConversationMessages($conversation_id, $fields = null, $exclude_fields = null, $is_read = null, $before_timestamp = null, $since_timestamp = null)
@@ -416,7 +417,7 @@ class ConversationsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -506,10 +507,10 @@ class ConversationsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -521,16 +522,19 @@ class ConversationsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -553,13 +557,12 @@ class ConversationsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getConversationMessage($conversation_id, $message_id, $fields = null, $exclude_fields = null)
@@ -587,7 +590,7 @@ class ConversationsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -679,10 +682,10 @@ class ConversationsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -694,16 +697,19 @@ class ConversationsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -726,27 +732,26 @@ class ConversationsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     protected function createHttpClientOption()
     {
         $options = [];
         if ($this->config->getDebug()) {
-            $options[RequestOptions::DEBUG] = fopen($this->config->getDebugFile(), 'a');
-            if (!$options[RequestOptions::DEBUG]) {
+            $options['debug'] = fopen($this->config->getDebugFile(), 'a');
+            if (!$options['debug']) {
                 throw new \RuntimeException('Failed to open the debug file: ' . $this->config->getDebugFile());
             }
         }
 
         if ($this->config->getTimeout()) {
-            $options[RequestOptions::TIMEOUT] = $this->config->getTimeout();
+            $options['timeout'] = $this->config->getTimeout();
         }
 
         return $options;

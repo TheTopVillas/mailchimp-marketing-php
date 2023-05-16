@@ -30,12 +30,9 @@
 namespace MailchimpMarketing\Api;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp\json_decode as json_decode;
+
 use MailchimpMarketing\ApiException;
 use MailchimpMarketing\Configuration;
 use MailchimpMarketing\HeaderSelector;
@@ -87,7 +84,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -151,10 +148,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -166,16 +163,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -198,13 +198,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteInterestCategory($list_id, $interest_category_id)
@@ -231,7 +230,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -309,10 +308,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -324,16 +323,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -356,13 +358,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteInterestCategoryInterest($list_id, $interest_category_id, $interest_id)
@@ -389,7 +390,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -481,10 +482,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -496,16 +497,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -528,13 +532,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteListMember($list_id, $subscriber_hash)
@@ -561,7 +564,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -639,10 +642,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -654,16 +657,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -686,13 +692,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteListMemberNote($list_id, $subscriber_hash, $note_id)
@@ -719,7 +724,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -811,10 +816,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -826,16 +831,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -858,13 +866,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteListMergeField($list_id, $merge_id)
@@ -891,7 +898,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -969,10 +976,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -984,16 +991,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1016,13 +1026,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteSegment($list_id, $segment_id)
@@ -1049,7 +1058,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1127,10 +1136,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1142,16 +1151,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1174,13 +1186,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function removeSegmentMember($list_id, $segment_id, $subscriber_hash)
@@ -1207,7 +1218,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1299,10 +1310,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1314,16 +1325,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1346,13 +1360,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteListWebhook($list_id, $webhook_id)
@@ -1379,7 +1392,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1457,10 +1470,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1472,16 +1485,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1504,13 +1520,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('DELETE', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListMemberTags($list_id, $subscriber_hash, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -1538,7 +1553,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1642,10 +1657,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1657,16 +1672,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1689,13 +1707,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getAllLists($fields = null, $exclude_fields = null, $count = '10', $offset = '0', $before_date_created = null, $since_date_created = null, $before_campaign_last_sent = null, $since_campaign_last_sent = null, $email = null, $sort_field = null, $sort_dir = null, $has_ecommerce_store = null, $include_total_contacts = null)
@@ -1723,7 +1740,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1835,10 +1852,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1850,16 +1867,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1882,13 +1902,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getList($list_id, $fields = null, $exclude_fields = null, $include_total_contacts = null)
@@ -1916,7 +1935,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1998,10 +2017,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -2013,16 +2032,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2045,13 +2067,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListAbuseReports($list_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -2079,7 +2100,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -2169,10 +2190,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -2184,16 +2205,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2216,13 +2240,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListAbuseReportDetails($list_id, $report_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -2250,7 +2273,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -2354,10 +2377,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -2369,16 +2392,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2401,13 +2427,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListRecentActivity($list_id, $count = '10', $offset = '0', $fields = null, $exclude_fields = null)
@@ -2435,7 +2460,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -2525,10 +2550,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -2540,16 +2565,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2572,13 +2600,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListClients($list_id, $fields = null, $exclude_fields = null)
@@ -2606,7 +2633,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -2684,10 +2711,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -2699,16 +2726,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2731,13 +2761,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListGrowthHistory($list_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0', $sort_field = null, $sort_dir = null)
@@ -2765,7 +2794,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -2863,10 +2892,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -2878,16 +2907,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2910,13 +2942,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListGrowthHistoryByMonth($list_id, $month, $fields = null, $exclude_fields = null)
@@ -2944,7 +2975,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -3036,10 +3067,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -3051,16 +3082,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -3083,13 +3117,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListInterestCategories($list_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0', $type = null)
@@ -3117,7 +3150,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -3211,10 +3244,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -3226,16 +3259,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -3258,13 +3294,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getInterestCategory($list_id, $interest_category_id, $fields = null, $exclude_fields = null)
@@ -3292,7 +3327,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -3384,10 +3419,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -3399,16 +3434,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -3431,13 +3469,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function listInterestCategoryInterests($list_id, $interest_category_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -3465,7 +3502,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -3569,10 +3606,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -3584,16 +3621,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -3616,13 +3656,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getInterestCategoryInterest($list_id, $interest_category_id, $interest_id, $fields = null, $exclude_fields = null)
@@ -3650,7 +3689,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -3756,10 +3795,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -3771,16 +3810,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -3803,13 +3845,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListLocations($list_id, $fields = null, $exclude_fields = null)
@@ -3837,7 +3878,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -3915,10 +3956,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -3930,16 +3971,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -3962,13 +4006,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListMembersInfo($list_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0', $email_type = null, $status = null, $since_timestamp_opt = null, $before_timestamp_opt = null, $since_last_changed = null, $before_last_changed = null, $unique_email_id = null, $vip_only = null, $interest_category_id = null, $interest_ids = null, $interest_match = null, $sort_field = null, $sort_dir = null, $since_last_campaign = null, $unsubscribed_since = null)
@@ -3996,7 +4039,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -4146,10 +4189,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -4161,16 +4204,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -4193,13 +4239,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListMember($list_id, $subscriber_hash, $fields = null, $exclude_fields = null)
@@ -4227,7 +4272,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -4319,10 +4364,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -4334,16 +4379,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -4366,13 +4414,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListMemberActivity($list_id, $subscriber_hash, $fields = null, $exclude_fields = null, $action = null)
@@ -4400,7 +4447,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -4499,10 +4546,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -4514,16 +4561,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -4546,13 +4596,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListMemberActivityFeed($list_id, $subscriber_hash, $fields = null, $exclude_fields = null, $count = '10', $offset = '0', $activity_filters = null)
@@ -4580,7 +4629,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -4691,10 +4740,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -4706,16 +4755,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -4738,13 +4790,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListMemberEvents($list_id, $subscriber_hash, $count = '10', $offset = '0', $fields = null, $exclude_fields = null)
@@ -4772,7 +4823,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -4876,10 +4927,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -4891,16 +4942,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -4923,13 +4977,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListMemberGoals($list_id, $subscriber_hash, $fields = null, $exclude_fields = null)
@@ -4957,7 +5010,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -5049,10 +5102,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -5064,16 +5117,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -5096,13 +5152,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListMemberNotes($list_id, $subscriber_hash, $sort_field = null, $sort_dir = null, $fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -5130,7 +5185,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -5242,10 +5297,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -5257,16 +5312,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -5289,13 +5347,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListMemberNote($list_id, $subscriber_hash, $note_id, $fields = null, $exclude_fields = null)
@@ -5323,7 +5380,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -5429,10 +5486,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -5444,16 +5501,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -5476,13 +5536,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListMergeFields($list_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0', $type = null, $required = null)
@@ -5510,7 +5569,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -5608,10 +5667,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -5623,16 +5682,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -5655,13 +5717,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListMergeField($list_id, $merge_id, $exclude_fields = null, $fields = null)
@@ -5689,7 +5750,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -5781,10 +5842,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -5796,16 +5857,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -5828,13 +5892,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getSegment($list_id, $segment_id, $fields = null, $exclude_fields = null, $include_cleaned = null, $include_transactional = null, $include_unsubscribed = null)
@@ -5862,7 +5925,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -5966,10 +6029,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -5981,16 +6044,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6013,13 +6079,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getSegmentMembersList($list_id, $segment_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0', $include_cleaned = null, $include_transactional = null, $include_unsubscribed = null)
@@ -6047,7 +6112,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -6163,10 +6228,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -6178,16 +6243,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6210,13 +6278,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListSignupForms($list_id)
@@ -6244,7 +6311,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -6308,10 +6375,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -6323,16 +6390,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6355,13 +6425,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getAllSurveysForList($list_id)
@@ -6388,7 +6457,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -6452,10 +6521,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -6467,16 +6536,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6499,13 +6571,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getSurvey($list_id, $survey_id)
@@ -6532,7 +6603,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -6610,10 +6681,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -6625,16 +6696,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6657,13 +6731,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListWebhooks($list_id)
@@ -6691,7 +6764,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -6755,10 +6828,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -6770,16 +6843,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6802,13 +6878,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getListWebhook($list_id, $webhook_id)
@@ -6836,7 +6911,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -6914,10 +6989,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -6929,16 +7004,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -6961,13 +7039,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateList($list_id, $body)
@@ -6995,7 +7072,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -7068,10 +7145,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -7083,16 +7160,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -7115,13 +7195,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateInterestCategory($list_id, $interest_category_id, $body)
@@ -7149,7 +7228,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -7236,10 +7315,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -7251,16 +7330,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -7283,13 +7365,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateInterestCategoryInterest($list_id, $interest_category_id, $interest_id, $body)
@@ -7317,7 +7398,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -7418,10 +7499,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -7433,16 +7514,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -7465,13 +7549,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateListMember($list_id, $subscriber_hash, $body, $skip_merge_validation = null)
@@ -7499,7 +7582,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -7590,10 +7673,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -7605,16 +7688,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -7637,13 +7723,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateListMemberNote($list_id, $subscriber_hash, $note_id, $body)
@@ -7671,7 +7756,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -7772,10 +7857,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -7787,16 +7872,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -7819,13 +7907,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateListMergeField($list_id, $merge_id, $body)
@@ -7853,7 +7940,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -7940,10 +8027,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -7955,16 +8042,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -7987,13 +8077,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateSegment($list_id, $segment_id, $body)
@@ -8021,7 +8110,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -8108,10 +8197,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -8123,16 +8212,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -8155,13 +8247,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateListWebhook($list_id, $webhook_id, $body)
@@ -8189,7 +8280,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -8276,10 +8367,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -8291,16 +8382,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -8323,13 +8417,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PATCH',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PATCH', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function createListMemberEvent($list_id, $subscriber_hash, $body)
@@ -8356,7 +8449,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -8443,10 +8536,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -8458,16 +8551,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -8490,13 +8586,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateListMemberTags($list_id, $subscriber_hash, $body)
@@ -8523,7 +8618,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -8610,10 +8705,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -8625,16 +8720,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -8657,13 +8755,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function createList($body)
@@ -8691,7 +8788,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -8750,10 +8847,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -8765,16 +8862,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -8797,13 +8897,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function batchListMembers($list_id, $body, $skip_merge_validation = null, $skip_duplicate_check = null)
@@ -8831,7 +8930,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -8912,10 +9011,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -8927,16 +9026,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -8959,13 +9061,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function createListInterestCategory($list_id, $body)
@@ -8993,7 +9094,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -9066,10 +9167,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -9081,16 +9182,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -9113,13 +9217,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function createInterestCategoryInterest($list_id, $interest_category_id, $body)
@@ -9147,7 +9250,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -9234,10 +9337,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -9249,16 +9352,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -9281,13 +9387,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addListMember($list_id, $body, $skip_merge_validation = null)
@@ -9315,7 +9420,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -9392,10 +9497,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -9407,16 +9512,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -9439,13 +9547,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function deleteListMemberPermanent($list_id, $subscriber_hash)
@@ -9472,7 +9579,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -9550,10 +9657,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -9565,16 +9672,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -9597,13 +9707,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function createListMemberNote($list_id, $subscriber_hash, $body)
@@ -9631,7 +9740,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -9718,10 +9827,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -9733,16 +9842,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -9765,13 +9877,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function addListMergeField($list_id, $body)
@@ -9799,7 +9910,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -9872,10 +9983,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -9887,16 +9998,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -9919,13 +10033,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function createSegment($list_id, $body)
@@ -9953,7 +10066,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -10026,10 +10139,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -10041,16 +10154,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -10073,13 +10189,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function batchSegmentMembers($body, $list_id, $segment_id)
@@ -10107,7 +10222,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -10194,10 +10309,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -10209,16 +10324,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -10241,13 +10359,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function createSegmentMember($list_id, $segment_id, $body)
@@ -10275,7 +10392,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -10362,10 +10479,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -10377,16 +10494,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -10409,13 +10529,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function updateListSignupForm($list_id, $body)
@@ -10443,7 +10562,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -10516,10 +10635,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -10531,16 +10650,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -10563,13 +10685,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function createListWebhook($list_id, $body)
@@ -10597,7 +10718,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -10670,10 +10791,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -10685,16 +10806,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -10717,13 +10841,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('POST', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function listSegments($list_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0', $type = null, $since_created_at = null, $before_created_at = null, $include_cleaned = null, $include_transactional = null, $include_unsubscribed = null, $since_updated_at = null, $before_updated_at = null)
@@ -10751,7 +10874,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -10873,10 +10996,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -10888,16 +11011,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -10920,13 +11046,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function setListMember($list_id, $subscriber_hash, $body, $skip_merge_validation = null)
@@ -10954,7 +11079,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -11045,10 +11170,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -11060,16 +11185,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -11092,13 +11220,12 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'PUT',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('PUT', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function tagSearch($list_id, $name = null)
@@ -11126,7 +11253,7 @@ class ListsApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -11194,10 +11321,10 @@ class ListsApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -11209,16 +11336,19 @@ class ListsApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -11241,27 +11371,26 @@ class ListsApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     protected function createHttpClientOption()
     {
         $options = [];
         if ($this->config->getDebug()) {
-            $options[RequestOptions::DEBUG] = fopen($this->config->getDebugFile(), 'a');
-            if (!$options[RequestOptions::DEBUG]) {
+            $options['debug'] = fopen($this->config->getDebugFile(), 'a');
+            if (!$options['debug']) {
                 throw new \RuntimeException('Failed to open the debug file: ' . $this->config->getDebugFile());
             }
         }
 
         if ($this->config->getTimeout()) {
-            $options[RequestOptions::TIMEOUT] = $this->config->getTimeout();
+            $options['timeout'] = $this->config->getTimeout();
         }
 
         return $options;

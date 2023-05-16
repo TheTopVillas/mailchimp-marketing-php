@@ -30,12 +30,9 @@
 namespace MailchimpMarketing\Api;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp\json_decode as json_decode;
+
 use MailchimpMarketing\ApiException;
 use MailchimpMarketing\Configuration;
 use MailchimpMarketing\HeaderSelector;
@@ -88,7 +85,7 @@ class ReportingApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -172,10 +169,10 @@ class ReportingApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -187,16 +184,19 @@ class ReportingApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -219,13 +219,12 @@ class ReportingApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getFacebookAdReport($outreach_id, $fields = null, $exclude_fields = null)
@@ -253,7 +252,7 @@ class ReportingApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -331,10 +330,10 @@ class ReportingApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -346,16 +345,19 @@ class ReportingApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -378,13 +380,12 @@ class ReportingApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getFacebookAdProductActivityReport($outreach_id, $fields = null, $exclude_fields = null, $count = '10', $offset = '0', $sort_field = null)
@@ -412,7 +413,7 @@ class ReportingApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -506,10 +507,10 @@ class ReportingApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -521,16 +522,19 @@ class ReportingApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -553,13 +557,12 @@ class ReportingApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getLandingPageReportsAll($fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -587,7 +590,7 @@ class ReportingApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -663,10 +666,10 @@ class ReportingApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -678,16 +681,19 @@ class ReportingApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -710,13 +716,12 @@ class ReportingApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getLandingPageReport($outreach_id, $fields = null, $exclude_fields = null)
@@ -744,7 +749,7 @@ class ReportingApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -822,10 +827,10 @@ class ReportingApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -837,16 +842,19 @@ class ReportingApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -869,13 +877,12 @@ class ReportingApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getSurveyReportsAll($fields = null, $exclude_fields = null, $count = '10', $offset = '0')
@@ -903,7 +910,7 @@ class ReportingApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -979,10 +986,10 @@ class ReportingApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -994,16 +1001,19 @@ class ReportingApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1026,13 +1036,12 @@ class ReportingApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getSurveyReport($outreach_id, $fields = null, $exclude_fields = null)
@@ -1060,7 +1069,7 @@ class ReportingApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1138,10 +1147,10 @@ class ReportingApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1153,16 +1162,19 @@ class ReportingApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1185,13 +1197,12 @@ class ReportingApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getSurveyQuestionReportsAll($outreach_id, $fields = null, $exclude_fields = null)
@@ -1219,7 +1230,7 @@ class ReportingApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1297,10 +1308,10 @@ class ReportingApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1312,16 +1323,19 @@ class ReportingApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1344,13 +1358,12 @@ class ReportingApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getSurveyQuestionReport($outreach_id, $question_id, $fields = null, $exclude_fields = null)
@@ -1378,7 +1391,7 @@ class ReportingApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1470,10 +1483,10 @@ class ReportingApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1485,16 +1498,19 @@ class ReportingApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1517,13 +1533,12 @@ class ReportingApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getSurveyQuestionAnswers($outreach_id, $question_id, $fields = null, $exclude_fields = null, $respondent_familiarity_is = null)
@@ -1551,7 +1566,7 @@ class ReportingApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1647,10 +1662,10 @@ class ReportingApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1662,16 +1677,19 @@ class ReportingApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1694,13 +1712,12 @@ class ReportingApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getSurveyResponsesAll($outreach_id, $fields = null, $exclude_fields = null, $answered_question = null, $chose_answer = null, $respondent_familiarity_is = null)
@@ -1728,7 +1745,7 @@ class ReportingApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1818,10 +1835,10 @@ class ReportingApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1833,16 +1850,19 @@ class ReportingApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -1865,13 +1885,12 @@ class ReportingApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     public function getSurveyResponse($outreach_id, $response_id)
@@ -1899,7 +1918,7 @@ class ReportingApi
                     sprintf(
                         '[%d] Error connecting to the API (%s)',
                         $statusCode,
-                        $request->getUri()
+                        $request->getUrl()
                     ),
                     $statusCode,
                     $response->getHeaders(),
@@ -1977,10 +1996,10 @@ class ReportingApi
 
             if($headers['Content-Type'] === 'application/json') {
                 if ($httpBody instanceof \stdClass) {
-                    $httpBody = \GuzzleHttp\json_encode($httpBody);
+                    $httpBody = json_encode($httpBody);
                 }
                 if (is_array($httpBody)) {
-                    $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
+                    $httpBody = json_encode(ObjectSerializer::sanitizeForSerialization($httpBody));
                 }
             }
         } elseif (count($formParams) > 0) {
@@ -1992,16 +2011,19 @@ class ReportingApi
                         'contents' => $formParamValue
                     ];
                 }
-                $httpBody = new MultipartStream($multipartContents);
+                $httpBody = new \GuzzleHttp\Post\MultipartBody($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = json_encode($formParams);
 
             } else {
-                $httpBody = Query::build($formParams);
+                $httpBody = \GuzzleHttp\Query::fromString($formParams);
             }
         }
 
+        if (!$httpBody instanceof \GuzzleHttp\Stream\StreamInterface) {
+            $httpBody = \GuzzleHttp\Stream\Stream::factory($httpBody);
+        }
 
         // Basic Authentication
         if (!empty($this->config->getUsername()) && !empty($this->config->getPassword())) {
@@ -2024,27 +2046,26 @@ class ReportingApi
             $headers
         );
 
-        $query = Query::build($queryParams);
-        return new Request(
-            'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
+        $query = http_build_query($queryParams);
+        $request = new \GuzzleHttp\Message\Request('GET', $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''));
+        $request->addHeaders($headers);
+        $request->setBody($httpBody);
+
+        return $request;
     }
 
     protected function createHttpClientOption()
     {
         $options = [];
         if ($this->config->getDebug()) {
-            $options[RequestOptions::DEBUG] = fopen($this->config->getDebugFile(), 'a');
-            if (!$options[RequestOptions::DEBUG]) {
+            $options['debug'] = fopen($this->config->getDebugFile(), 'a');
+            if (!$options['debug']) {
                 throw new \RuntimeException('Failed to open the debug file: ' . $this->config->getDebugFile());
             }
         }
 
         if ($this->config->getTimeout()) {
-            $options[RequestOptions::TIMEOUT] = $this->config->getTimeout();
+            $options['timeout'] = $this->config->getTimeout();
         }
 
         return $options;

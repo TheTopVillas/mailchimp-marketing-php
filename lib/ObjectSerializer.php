@@ -196,7 +196,7 @@ class ObjectSerializer
      *
      * @return string
      */
-    public static function serializeCollection(array $collection, $collectionFormat, $allowCollectionFormatMulti = false)
+    public static function serializeCollection($collection, $collectionFormat, $allowCollectionFormatMulti = false)
     {
         if ($allowCollectionFormatMulti && ('multi' === $collectionFormat)) {
             // http_build_query() almost does the job for us. We just

@@ -4,7 +4,7 @@
   </a>
 </p>
 
-# Mailchimp Marketing — PHP
+# Mailchimp Marketing — PHP (backport Guzzle 4 & PHP 5.6)
 
 The official PHP client library for the Mailchimp Marketing API
 
@@ -20,7 +20,13 @@ Or add the following to `composer.json`
 {
   "require": {
     "mailchimp/marketing": "*"
-  }
+  },
+  "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/TheTopVillas/mailchimp-marketing-php.git"
+        }
+    ]
 }
 ```
 
@@ -33,7 +39,7 @@ composer install
 
 Clone the repo
 ```
-git clone git@github.com:mailchimp/mailchimp-marketing-php.git
+git clone git@github.com:TheTopVillas/mailchimp-marketing-php.git
 ```
 
 In the client library project root, install all dependencies
@@ -48,7 +54,7 @@ require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
 
 ## Quick Start
 
-### Note that this SDK requires PHP 7.2 or above.
+### Note that this SDK requires PHP 5.5 to PHP 7.0
 
 ```php
 require_once('/path/to/MailchimpMarketing/vendor/autoload.php');
