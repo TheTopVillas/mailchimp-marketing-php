@@ -79,6 +79,14 @@ class VerifiedDomainsApi
             }
 
             $statusCode = $response->getStatusCode();
+            $responseBody = $response->getBody();
+            $content = $responseBody->getContents();
+
+            try {
+                $content = json_decode($content);
+            } catch (\Exception $e) {
+                $content = $content;
+            }
 
             if ($statusCode < 200 || $statusCode > 299) {
                 throw new ApiException(
@@ -89,18 +97,15 @@ class VerifiedDomainsApi
                     ),
                     $statusCode,
                     $response->getHeaders(),
-                    $response->getBody()
+                    $content
                 );
             }
-
-            $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
-            $content = json_decode($content);
 
             return $content;
 
         } catch (ApiException $e) {
-            throw $e->getResponseBody();
+            $message = ($e->getResponseBody() instanceof \stdClass) ? $e->getResponseBody()->title : $e->getMessage();
+            throw new \Exception($message, $e->getCode(), $e);
         }
     }
 
@@ -220,6 +225,14 @@ class VerifiedDomainsApi
             }
 
             $statusCode = $response->getStatusCode();
+            $responseBody = $response->getBody();
+            $content = $responseBody->getContents();
+
+            try {
+                $content = json_decode($content);
+            } catch (\Exception $e) {
+                $content = $content;
+            }
 
             if ($statusCode < 200 || $statusCode > 299) {
                 throw new ApiException(
@@ -230,18 +243,15 @@ class VerifiedDomainsApi
                     ),
                     $statusCode,
                     $response->getHeaders(),
-                    $response->getBody()
+                    $content
                 );
             }
-
-            $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
-            $content = json_decode($content);
 
             return $content;
 
         } catch (ApiException $e) {
-            throw $e->getResponseBody();
+            $message = ($e->getResponseBody() instanceof \stdClass) ? $e->getResponseBody()->title : $e->getMessage();
+            throw new \Exception($message, $e->getCode(), $e);
         }
     }
 
@@ -367,6 +377,14 @@ class VerifiedDomainsApi
             }
 
             $statusCode = $response->getStatusCode();
+            $responseBody = $response->getBody();
+            $content = $responseBody->getContents();
+
+            try {
+                $content = json_decode($content);
+            } catch (\Exception $e) {
+                $content = $content;
+            }
 
             if ($statusCode < 200 || $statusCode > 299) {
                 throw new ApiException(
@@ -377,18 +395,15 @@ class VerifiedDomainsApi
                     ),
                     $statusCode,
                     $response->getHeaders(),
-                    $response->getBody()
+                    $content
                 );
             }
-
-            $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
-            $content = json_decode($content);
 
             return $content;
 
         } catch (ApiException $e) {
-            throw $e->getResponseBody();
+            $message = ($e->getResponseBody() instanceof \stdClass) ? $e->getResponseBody()->title : $e->getMessage();
+            throw new \Exception($message, $e->getCode(), $e);
         }
     }
 
@@ -514,6 +529,14 @@ class VerifiedDomainsApi
             }
 
             $statusCode = $response->getStatusCode();
+            $responseBody = $response->getBody();
+            $content = $responseBody->getContents();
+
+            try {
+                $content = json_decode($content);
+            } catch (\Exception $e) {
+                $content = $content;
+            }
 
             if ($statusCode < 200 || $statusCode > 299) {
                 throw new ApiException(
@@ -524,18 +547,15 @@ class VerifiedDomainsApi
                     ),
                     $statusCode,
                     $response->getHeaders(),
-                    $response->getBody()
+                    $content
                 );
             }
-
-            $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
-            $content = json_decode($content);
 
             return $content;
 
         } catch (ApiException $e) {
-            throw $e->getResponseBody();
+            $message = ($e->getResponseBody() instanceof \stdClass) ? $e->getResponseBody()->title : $e->getMessage();
+            throw new \Exception($message, $e->getCode(), $e);
         }
     }
 
@@ -647,6 +667,14 @@ class VerifiedDomainsApi
             }
 
             $statusCode = $response->getStatusCode();
+            $responseBody = $response->getBody();
+            $content = $responseBody->getContents();
+
+            try {
+                $content = json_decode($content);
+            } catch (\Exception $e) {
+                $content = $content;
+            }
 
             if ($statusCode < 200 || $statusCode > 299) {
                 throw new ApiException(
@@ -657,18 +685,15 @@ class VerifiedDomainsApi
                     ),
                     $statusCode,
                     $response->getHeaders(),
-                    $response->getBody()
+                    $content
                 );
             }
-
-            $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
-            $content = json_decode($content);
 
             return $content;
 
         } catch (ApiException $e) {
-            throw $e->getResponseBody();
+            $message = ($e->getResponseBody() instanceof \stdClass) ? $e->getResponseBody()->title : $e->getMessage();
+            throw new \Exception($message, $e->getCode(), $e);
         }
     }
 
