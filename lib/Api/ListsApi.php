@@ -79,7 +79,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -230,7 +230,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -395,7 +395,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -574,7 +574,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -595,7 +595,7 @@ class ListsApi
                 );
             }
 
-            return $content;
+            return true;
 
         } catch (ApiException $e) {
             $message = ($e->getResponseBody() instanceof \stdClass) ? $e->getResponseBody()->title : $e->getMessage();
@@ -739,7 +739,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -918,7 +918,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -1083,7 +1083,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -1248,7 +1248,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -1427,7 +1427,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -1593,7 +1593,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -1785,7 +1785,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -1985,7 +1985,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -2155,7 +2155,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -2333,7 +2333,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -2525,7 +2525,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -2703,7 +2703,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -2869,7 +2869,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -3055,7 +3055,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -3235,7 +3235,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -3417,7 +3417,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -3597,7 +3597,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -3789,7 +3789,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -3983,7 +3983,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -4149,7 +4149,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -4387,7 +4387,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -4567,7 +4567,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -4754,7 +4754,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -4953,7 +4953,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -5145,7 +5145,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -5325,7 +5325,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -5525,7 +5525,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -5719,7 +5719,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -5905,7 +5905,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -6085,7 +6085,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -6277,7 +6277,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -6481,7 +6481,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -6632,7 +6632,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -6783,7 +6783,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -6949,7 +6949,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -7101,7 +7101,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -7267,7 +7267,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -7428,7 +7428,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -7603,7 +7603,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -7792,7 +7792,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -7971,7 +7971,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -8160,7 +8160,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -8335,7 +8335,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -8510,7 +8510,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -8684,7 +8684,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -8858,7 +8858,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -9033,7 +9033,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -9180,7 +9180,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -9349,7 +9349,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -9510,7 +9510,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -9685,7 +9685,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -9849,7 +9849,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -10015,7 +10015,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -10190,7 +10190,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -10351,7 +10351,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -10512,7 +10512,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -10687,7 +10687,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -10862,7 +10862,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -11023,7 +11023,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -11184,7 +11184,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -11394,7 +11394,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -11573,7 +11573,7 @@ class ListsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);

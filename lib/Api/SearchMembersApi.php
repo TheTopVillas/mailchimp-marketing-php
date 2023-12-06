@@ -80,7 +80,7 @@ class SearchMembersApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);

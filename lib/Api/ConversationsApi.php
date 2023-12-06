@@ -80,7 +80,7 @@ class ConversationsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -256,7 +256,7 @@ class ConversationsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -422,7 +422,7 @@ class ConversationsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
@@ -600,7 +600,7 @@ class ConversationsApi
 
             $statusCode = $response->getStatusCode();
             $responseBody = $response->getBody();
-            $content = $responseBody->getContents();
+            $content = $responseBody ? $responseBody->getContents() : '';
 
             try {
                 $content = json_decode($content);
